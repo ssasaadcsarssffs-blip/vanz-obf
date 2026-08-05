@@ -1,27 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
     const secureBtn = document.getElementById('secureBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const toggleDemoBtn = document.getElementById('toggleDemoBtn');
-    const toggleBackBtn = document.getElementById('toggleBackBtn');
     const luaInput = document.getElementById('luaInput');
     const generatedUrl = document.getElementById('generatedUrl');
     const resultPanel = document.getElementById('resultPanel');
-    const mainApp = document.getElementById('mainApp');
-    const accessDeniedScreen = document.getElementById('accessDeniedScreen');
 
-    secureBtn.addEventListener('click', () => {
+    secureBtn.addEventListener('click', async () => {
         const scriptContent = luaInput.value.trim();
         if (!scriptContent) {
             alert('Silakan masukkan script Luau terlebih dahulu!');
             return;
         }
 
-        const currentOrigin = window.location.origin;
-        const randomPath = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
-        const finalUrl = `${currentOrigin}/${randomPath}`;
+        try {
+            const response = await fetch('/api/secure', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ script: scriptContent })
+            });
 
-        generatedUrl.value = finalUrl;
-        resultPanel.style.display = 'block';
+            const data = await response.json();
+            if (data.url) {
+                generatedUrl.value = data.url;
+                resultPanel.style.display = 'block';
+            } else {
+                alert('Gagal menghasilkan secure URL!');
+            }
+        } catch (err) {
+            alert('Terjadi kesalahan koneksi ke server.');
+        }
     });
 
     copyBtn.addEventListener('click', () => {
@@ -29,17 +38,4 @@ document.addEventListener('DOMContentLoaded', () => {
         document.execCommand('copy');
         alert('URL Secured berhasil disalin!');
     });
-
-    function toggleView() {
-        if (mainApp.style.display === 'none') {
-            mainApp.style.display = 'block';
-            accessDeniedScreen.style.display = 'none';
-        } else {
-            mainApp.style.display = 'none';
-            accessDeniedScreen.style.display = 'flex';
-        }
-    }
-
-    toggleDemoBtn.addEventListener('click', toggleView);
-    toggleBackBtn.addEventListener('click', toggleView);
 });
