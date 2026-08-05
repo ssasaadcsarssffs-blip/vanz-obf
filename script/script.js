@@ -11,19 +11,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checkAccessProtection();
 
-    secureBtn.addEventListener('click', () => {
+    secureBtn.addEventListener('click', async () => {
         const scriptContent = luaInput.value.trim();
         if (!scriptContent) {
             alert('Silakan masukkan script Luau terlebih dahulu!');
             return;
         }
 
-        const encodedScript = btoa(encodeURIComponent(scriptContent));
-        const currentOrigin = window.location.origin + window.location.pathname;
-        const finalUrl = `${currentOrigin}?data=${encodedScript}`;
+        secureBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SECURING...';
+        secureBtn.disabled = true;
 
-        generatedUrl.value = finalUrl;
-        resultPanel.style.display = 'block';
+        try {
+            const encodedScript = btoa(encodeURIComponent(scriptContent));
+            const currentOrigin = window.location.origin + window.location.pathname;
+            const longUrl = `${currentOrigin}?data=${encodedScript}`;
+
+            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+            if (response.ok) {
+                const shortUrl = await response.text();
+                generatedUrl.value = shortUrl;
+                resultPanel.style.display = 'block';
+            } else {
+                generatedUrl.value = longUrl;
+                resultPanel.style.display = 'block';
+                alert('Gagal memendekkan URL, menggunakan URL panjang sebagai cadangan.');
+            }
+        } catch (error) {
+            const encodedScript = btoa(encodeURIComponent(scriptContent));
+            const currentOrigin = window.location.origin + window.location.pathname;
+            generatedUrl.value = `${currentOrigin}?data=${encodedScript}`;
+            resultPanel.style.display = 'block';
+            alert('Koneksi ke pemendek URL gagal, menggunakan URL standar.');
+        }
+
+        secureBtn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> SECURE HARD';
+        secureBtn.disabled = false;
     });
 
     copyBtn.addEventListener('click', () => {
@@ -52,13 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const decodedScript = decodeURIComponent(atob(dataParam));
-                console.log("Roblox Data Prepared: ", decodedScript);
+                console.log("Roblox Data Secured.");
             } catch (e) {
                 console.error("Invalid Payload");
             }
         }
     }
 
-    toggleDemoBtn.addEventListener('click', toggleView);
-    toggleBackBtn.addEventListener('click', toggleView);
+    if (toggleDemoBtn) toggleDemoBtn.addEventListener('click', toggleView);
+    if (toggleBackBtn) toggleBackBtn.addEventListener('click', toggleView);
 });
