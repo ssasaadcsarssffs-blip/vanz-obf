@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Secure | Roblox Lua Protector</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-v">V</div>
+            <div class="brand-title">V-SECURE LUA</div>
+        </div>
+        <div class="code-badge">&lt;/&gt; ROBLOX PROTECTOR</div>
+    </header>
+
+    <div class="container" id="mainApp">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-code"></i> Paste Input Luau Script
+            </div>
+            <button class="btn-demo-toggle" id="toggleDemoBtn">
+                <i class="fa-solid fa-eye"></i> Simulasi Browser View
+            </button>
+        </div>
+
+        <div class="editor-wrapper">
+            <textarea id="luaInput" placeholder="-- Masukkan script Luau / Roblox Anda di sini"></textarea>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secure" id="secureBtn">
+                <i class="fa-solid fa-shield-halved"></i> SECURE HARD
+            </button>
+            <span class="protection-text">
+                <i class="fa-solid fa-lock" class="lock-accent"></i> Client-Only Headers Protected
+            </span>
+        </div>
+
+        <div class="result-panel" id="resultPanel">
+            <div class="success-title">
+                <i class="fa-solid fa-check-circle"></i> Script Secured Successfully!
+            </div>
+            <p class="result-desc">Gunakan URL di bawah ini pada executor Roblox Anda (loadstring):</p>
+            <div class="url-box">
+                <input type="text" class="url-input" id="generatedUrl" readonly value="">
+                <button class="btn-copy" id="copyBtn"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="access-denied-screen" id="accessDeniedScreen">
+        <div class="lock-icon-wrapper">
+            <i class="fa-solid fa-lock-keyhole lock-icon"></i>
+        </div>
+        <div class="denied-title">ACCESS DENIED</div>
+        <div class="denied-desc">
+            Halaman ini dilindungi oleh protokol sistem keamanan tinggi <strong>V-Secure</strong>.<br>
+            Akses langsung melalui Browser/Player tidak diizinkan. Hanya permintaan resmi dari <strong>Roblox Client Engine</strong> yang diperbolehkan.
+        </div>
+        <div class="client-badge">
+            HTTP_USER_AGENT: RobloxStudio/WinInet (Unauthorized)
+        </div>
+        <br>
+        <button class="btn-demo-toggle" id="toggleBackBtn">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
+        </button>
+    </div>
+
+    <script src="script/script.js"></script>
+</body>
+</html>
