@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const shortCode = generateShortCode(7);
-        const currentOrigin = window.location.origin;
-        const shortUrl = `${currentOrigin}/${shortCode}`;
+        const currentOrigin = window.location.origin + window.location.pathname;
+        const shortUrl = `${currentOrigin}?code=${shortCode}`;
 
         generatedUrl.value = shortUrl;
         resultPanel.style.display = 'block';
@@ -52,8 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAccessProtection() {
-        const path = window.location.pathname;
-        if (path !== '/' && path !== '/index.html' && path.length > 1) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeParam = urlParams.get('code');
+
+        if (codeParam) {
             mainApp.style.display = 'none';
             accessDeniedScreen.style.display = 'flex';
         }
