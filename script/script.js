@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedUrl = document.getElementById('generatedUrl');
     const resultPanel = document.getElementById('resultPanel');
 
+    if (!secureBtn) return;
+
     secureBtn.addEventListener('click', () => {
         const scriptContent = luaInput.value.trim();
         if (!scriptContent) {
@@ -12,17 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const encodedScript = Buffer ? Buffer.from(encodeURIComponent(scriptContent)).toString('base64') : btoa(encodeURIComponent(scriptContent));
-        const currentOrigin = window.location.origin;
-        const finalUrl = `${currentOrigin}/api/raw?script=${encodeURIComponent(encodedScript)}`;
+        try {
+            const encodedScript = btoa(encodeURIComponent(scriptContent));
+            const currentOrigin = window.location.origin;
+            const finalUrl = `${currentOrigin}/api/raw?script=${encodeURIComponent(encodedScript)}`;
 
-        generatedUrl.value = finalUrl;
-        resultPanel.style.display = 'block';
+            generatedUrl.value = finalUrl;
+            resultPanel.style.display = 'block';
+        } catch (err) {
+            alert('Gagal memproses script!');
+            console.error(err);
+        }
     });
 
-    copyBtn.addEventListener('click', () => {
-        generatedUrl.select();
-        document.execCommand('copy');
-        alert('URL Secured berhasil disalin!');
-    });
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            generatedUrl.select();
+            document.execCommand('copy');
+            alert('URL Secured berhasil disalin!');
+        });
+    }
 });
