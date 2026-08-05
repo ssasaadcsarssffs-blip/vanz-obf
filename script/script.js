@@ -11,41 +11,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checkAccessProtection();
 
-    secureBtn.addEventListener('click', async () => {
+    function generateShortCode(length = 7) {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    secureBtn.addEventListener('click', () => {
         const scriptContent = luaInput.value.trim();
         if (!scriptContent) {
             alert('Silakan masukkan script Luau terlebih dahulu!');
             return;
         }
 
-        secureBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SECURING...';
-        secureBtn.disabled = true;
+        const shortCode = generateShortCode(7);
+        const currentOrigin = window.location.origin;
+        const shortUrl = `${currentOrigin}/${shortCode}`;
 
-        try {
-            const encodedScript = btoa(encodeURIComponent(scriptContent));
-            const currentOrigin = window.location.origin + window.location.pathname;
-            const longUrl = `${currentOrigin}?data=${encodedScript}`;
-
-            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-            if (response.ok) {
-                const shortUrl = await response.text();
-                generatedUrl.value = shortUrl;
-                resultPanel.style.display = 'block';
-            } else {
-                generatedUrl.value = longUrl;
-                resultPanel.style.display = 'block';
-                alert('Gagal memendekkan URL, menggunakan URL panjang sebagai cadangan.');
-            }
-        } catch (error) {
-            const encodedScript = btoa(encodeURIComponent(scriptContent));
-            const currentOrigin = window.location.origin + window.location.pathname;
-            generatedUrl.value = `${currentOrigin}?data=${encodedScript}`;
-            resultPanel.style.display = 'block';
-            alert('Koneksi ke pemendek URL gagal, menggunakan URL standar.');
-        }
-
-        secureBtn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> SECURE HARD';
-        secureBtn.disabled = false;
+        generatedUrl.value = shortUrl;
+        resultPanel.style.display = 'block';
     });
 
     copyBtn.addEventListener('click', () => {
@@ -65,19 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAccessProtection() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const dataParam = urlParams.get('data');
-
-        if (dataParam) {
+        const path = window.location.pathname;
+        if (path !== '/' && path !== '/index.html' && path.length > 1) {
             mainApp.style.display = 'none';
             accessDeniedScreen.style.display = 'flex';
-
-            try {
-                const decodedScript = decodeURIComponent(atob(dataParam));
-                console.log("Roblox Data Secured.");
-            } catch (e) {
-                console.error("Invalid Payload");
-            }
         }
     }
 
