@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/v/:id", "destination": "/api/raw?id=:id" }
   ]
 }
