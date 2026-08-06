@@ -18,27 +18,27 @@ document.addEventListener('DOMContentLoaded', () => {
         secureBtn.disabled = true;
 
         try {
-            const formData = new URLSearchParams();
-            formData.append('content', scriptContent);
-            formData.append('expiry', '365');
-
-            const response = await fetch('https://dpaste.org/api/', {
+            const response = await fetch('/api/save', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData.toString()
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ script: scriptContent })
             });
 
-            const rawResponse = (await response.text()).trim();
-            const cleanUrl = rawResponse.replace(/"/g, '');
-            const shortId = cleanUrl.split('/').filter(Boolean).pop().replace('.txt', '');
+            const data = await response.json();
 
-            const currentOrigin = window.location.origin;
-            const finalUrl = `${currentOrigin}/v/${shortId}`;
+            if (response.ok && data.id) {
+                const currentOrigin = window.location.origin;
+                const finalUrl = `${currentOrigin}/v/${data.id}`;
 
-            generatedUrl.value = finalUrl;
-            resultPanel.style.display = 'block';
+                generatedUrl.value = finalUrl;
+                resultPanel.style.display = 'block';
+            } else {
+                alert('Gagal mengamankan script: ' + (data.error || 'Server menolak request'));
+            }
         } catch (err) {
-            alert('Gagal mengamankan script!');
+            alert('Terjadi kesalahan koneksi ke server: ' + err.message);
         }
 
         secureBtn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> SECURE HARD';
