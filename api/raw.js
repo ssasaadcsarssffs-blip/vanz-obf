@@ -1,5 +1,5 @@
-module.exports = (req, res) => {
-    const { script } = req.query;
+module.exports = async (req, res) => {
+    const { id } = req.query;
     const userAgent = req.headers['user-agent'] || '';
 
     const isRoblox = userAgent.includes('Roblox') || 
@@ -7,18 +7,23 @@ module.exports = (req, res) => {
                      userAgent.includes('WinInet') || 
                      userAgent.includes('RobloxApp');
 
-    if (!script) {
-        return res.status(400).send('Error: Script parameter missing');
+    if (!id) {
+        return res.status(400).send('Error: ID missing');
     }
 
     if (isRoblox) {
         try {
-            const decodedScript = decodeURIComponent(Buffer.from(script, 'base64').toString('utf-8'));
+            const response = await fetch(`https://dpaste.org/${id}/raw`);
+            if (!response.ok) {
+                res.setHeader('Content-Type', 'text/plain');
+                return res.status(404).send('-- Error: Script tidak ditemukan atau kadaluarsa');
+            }
+            const scriptText = await response.text();
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-            return res.status(200).send(decodedScript);
+            return res.status(200).send(scriptText);
         } catch (err) {
             res.setHeader('Content-Type', 'text/plain');
-            return res.status(400).send('Error: Invalid payload format');
+            return res.status(500).send('-- Error: Gagal mengambil script');
         }
     } else {
         res.setHeader('Content-Type', 'text/html');
