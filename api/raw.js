@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
 
     if (isRoblox) {
         try {
-            const response = await fetch(`https://dpaste.org/${id}/raw`);
+            const response = await fetch(`https://bytebin.lucko.me/raw/${id}`);
             if (!response.ok) {
                 res.setHeader('Content-Type', 'text/plain; charset=utf-8');
                 return res.status(404).send('-- Error: Script tidak ditemukan atau telah expired');
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
             return res.status(403).send(htmlContent);
         } else {
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
-            return res.status(403).send('<h1>403 ACCESS DENIED</h1><p>Hanya client Roblox yang dapat mengakses link ini.</p>');
+            return res.status(403).send('<h1>403 ACCESS DENIED</h1><p>HANYA CLIENT ROBLOX YANG DAPAT MENGAKSES KODE INI</p>');
         }
     }
 };
