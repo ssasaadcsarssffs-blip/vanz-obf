@@ -3,20 +3,23 @@ const path = require('path');
 
 module.exports = async (req, res) => {
     const { id } = req.query;
-    const userAgent = (req.headers['user-agent'] || '').toLowerCase();
-
-    const isRoblox = userAgent.includes('roblox');
+    const headers = req.headers;
+    const acceptHeader = (headers['accept'] || '').toLowerCase();
+    const secFetchDest = headers['sec-fetch-dest'];
 
     if (!id) {
         return res.status(400).send('Error: ID Missing');
     }
 
-    if (isRoblox) {
+    const isBrowserNavigation = secFetchDest === 'document' || 
+                                (headers['sec-ch-ua'] && acceptHeader.includes('text/html'));
+
+    if (!isBrowserNavigation) {
         try {
             const response = await fetch(`https://bytebin.lucko.me/raw/${id}`);
             if (!response.ok) {
                 res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-                return res.status(404).send('-- Error: Script tidak ditemukan atau telah expired');
+                return res.status(404).send('-- Error: Script tidak ditemukan atau expired');
             }
             const scriptData = await response.text();
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');
